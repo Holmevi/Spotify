@@ -1,10 +1,24 @@
 import { Box, Typography, Avatar } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const Playlist = ({ spotifyApi, token }) => {
 	const [playlistInfo, setplaylistinfo] = useState();
 	const { id } = useParams();
+
+	useEffect(() => {
+		const getData = async () => {
+			try {
+				const playlistDetails = await spotifyApi.getPlaylist(id);
+				console.log(playlistDetails);
+			} catch(e) {
+				console.error(e);
+			}
+		}
+
+		getData();
+	}), [id];
+
 	return (
 		<Box id="Playlist__page" sx={{ backgroundColor: 'background.paper', flex: 1, overflowY: 'auto' }}>
 			<Box
@@ -17,7 +31,7 @@ const Playlist = ({ spotifyApi, token }) => {
 					alignItems: { xs: 'flex-start', md: 'flex-end', xl: 'center' },
 					gap: 3,
 					boxSizing: 'border-box',
-					flexDirection: {xs: 'column', md: 'row'}
+					flexDirection: { xs: 'column', md: 'row' }
 				}}
 			>
 				<Avatar
