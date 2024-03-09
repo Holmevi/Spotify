@@ -9,7 +9,7 @@ const Home = () => {
         flexDirection: 'column',
         gap: 5
     }}>
-        <img src="\TA-logo.png" alt="Jimmy Holmevi" style={{ maxWidth: '50%', maxHeight: '50%' }} />
+        <img src=".\TA-logo.png" alt="Jimmy Holmevi" style={{ maxWidth: '50%', maxHeight: '50%' }} />
         <Button size="large" variant="contained" href="https://beautify.graphics/">Visit my Homepage</Button>
     </Box>
 };

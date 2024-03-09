@@ -16,7 +16,7 @@ const Login = () => {
 			}}
 		>
 			<img
-				src="/Spotify_Logo.png"
+				src="./Spotify_Logo.png"
 				alt="Techover spotify"
 				style={{ marginBottom: 300, width: '70%', maxWidth: 500 }}
 			/>
