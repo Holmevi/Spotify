@@ -27,12 +27,36 @@ const SongTable = ({}) => {
 					<AccessTimeIcon sx={{ width: 20, height: 20 }} />
 				</Grid>
 			</Grid>
-            <Box pb={2}>
-                <Divider sx={{ width: '100%', height: 1 }} />
-            </Box>
-            <SongRow />
-            <SongRow />
-            <SongRow />
+			<Box pb={2}>
+				<Divider sx={{ width: '100%', height: 1 }} />
+			</Box>
+			<SongRow
+				images={null}
+				title={'Rich Flex'}
+				artist="Drake"
+				album="Her Loss"
+				duration="3:32"
+				i={1}
+				loading={false}
+			/>
+			<SongRow
+				images={null}
+				title={'Rich Flex'}
+				artist="Drake"
+				album="Her Loss"
+				duration="3:32"
+				i={1}
+				loading={false}
+			/>
+			<SongRow
+				images={null}
+				title={'Rich Flex'}
+				artist="Drake"
+				album="Her Loss"
+				duration="3:32"
+				i={1}
+				loading={true}
+			/>
 		</Box>
 	);
 };
