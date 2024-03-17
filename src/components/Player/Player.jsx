@@ -2,12 +2,12 @@ import { Box, Grid, Typography, Avatar } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const Player = ({ spotifyApi, token }) => {
-    const [localPlayer, setLocalPlayer] = useState();
-    const [is_paused, setIsPaused] = useState(false);
-    const [current_track, setCurrentTrack] = useState();
-    const [device, setDevice] = useState();
-    const [duration, setDuration] = useState();
-    const [progress, setProgress] = useState();
+	const [localPlayer, setLocalPlayer] = useState();
+	const [is_paused, setIsPaused] = useState(false);
+	const [current_track, setCurrentTrack] = useState();
+	const [device, setDevice] = useState();
+	const [duration, setDuration] = useState();
+	const [progress, setProgress] = useState();
 
 	useEffect(() => {
 		const script = document.createElement('script');
@@ -27,31 +27,43 @@ const Player = ({ spotifyApi, token }) => {
 
 			player.addListener('ready', ({ device_id }) => {
 				console.log('Ready with Device ID', device_id);
-                setDevice(device_id);
-                setLocalPlayer(player);
+				setDevice(device_id);
+				setLocalPlayer(player);
 			});
 
 			player.addListener('not_ready', ({ device_id }) => {
 				console.log('Device ID has gone offline', device_id);
 			});
-            
-            player.addListener('player_state_changed', (state) => {
-                if(!state || !state.track_window?.current_track) {
-                    return;
-                }
-                console.log(state);
 
-                const duration = state.track_window.current_track.duration_ms / 1000;
-                const progress = state.position / 1000;
-                setDuration(duration);
-                setProgress(progress);
-                setIsPaused(state.paused);
-                setCurrentTrack(state.track_window.current_track);
-            });
+			player.addListener('player_state_changed', (state) => {
+				if (!state || !state.track_window?.current_track) {
+					return;
+				}
+				console.log(state);
+
+				const duration = state.track_window.current_track.duration_ms / 1000;
+				const progress = state.position / 1000;
+				setDuration(duration);
+				setProgress(progress);
+				setIsPaused(state.paused);
+				setCurrentTrack(state.track_window.current_track);
+			});
 
 			player.connect();
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!localPlayer) return;
+		async function connect() {
+			await localPlayer.connect();
+		}
+
+		connect();
+		return () => {
+			localPlayer.disconnect();
+		};
+	}, [localPlayer]);
 
 	return (
 		<Box>
@@ -66,11 +78,18 @@ const Player = ({ spotifyApi, token }) => {
 					borderTop: '1px solid #292929'
 				}}
 			>
-				<Grid xs={12} md={4} items sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-					<Avatar src={null} alt={null} variant="square" sx={{ width: 56, height: 56, marginRight: 2 }} />
+				<Grid xs={12} md={4} item sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+					<Avatar
+						src={current_track?.album.images[0].url}
+						alt={current_track?.album.name}
+						variant="square"
+						sx={{ width: 56, height: 56, marginRight: 2 }}
+					/>
 					<Box>
-						<Typography sx={{ color: 'text.primary', fontSize: 14 }}>Can´t take a joke</Typography>
-						<Typography sx={{ color: 'text.secondary', fontSize: 10 }}>Drake</Typography>
+						<Typography sx={{ color: 'text.primary', fontSize: 14 }}>{current_track?.name}</Typography>
+						<Typography sx={{ color: 'text.secondary', fontSize: 10 }}>
+							{current_track?.artists[0].name}
+						</Typography>
 					</Box>
 				</Grid>
 				<Grid
@@ -80,11 +99,11 @@ const Player = ({ spotifyApi, token }) => {
 						alignItems: 'center'
 					}}
 					md={4}
-					items
+					item
 				>
 					Play-knappen
 				</Grid>
-				<Grid xs={6} md={4} items sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+				<Grid xs={6} md={4} item sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
 					Volume
 				</Grid>
 			</Grid>
