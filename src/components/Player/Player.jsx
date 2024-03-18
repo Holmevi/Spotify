@@ -1,5 +1,6 @@
 import { Box, Grid, Typography, Avatar } from '@mui/material';
 import { useEffect, useState } from 'react';
+import PlayerControls from '../PlayerControls/PlayerControls';
 
 const Player = ({ spotifyApi, token }) => {
 	const [localPlayer, setLocalPlayer] = useState();
@@ -113,7 +114,12 @@ const Player = ({ spotifyApi, token }) => {
 					md={4}
 					item
 				>
-					Play-knappen
+					<PlayerControls
+						progress={progress}
+						is_paused={is_paused}
+						duration={duration}
+						player={localPlayer}
+					/>
 				</Grid>
 				<Grid xs={6} md={4} item sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
 					Volume
