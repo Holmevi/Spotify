@@ -1,51 +1,51 @@
-import { Box, Typography, Avatar, Skeleton } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import SongTable from '../components/SongTable/SongTable';
 
 const Playlist = ({ spotifyApi, token }) => {
-	const [playlistInfo, setplaylistinfo] = useState();
+	const [playlistInfo, setPlaylistInfo] = useState();
 	const [songs, setSongs] = useState([]);
-	const [status, setStatus] = useState({ isLoading: true, isError: null });
+	const [status, setStatus] = useState({ isLoading: false, isError: null });
 	const { id } = useParams();
 
-	const formatSongs = useCallback(
-		(items) =>
-			items.map((item, i) => {
-				const { track } = item;
+	const formatSongData = useCallback(
+		(songs) => {
+			return songs.map((song, i) => {
+				const { track } = song;
 				track.contextUri = `spotify:playlist:${id}`;
 				track.position = i;
 				return track;
-			}),
+			});
+		},
 		[id]
 	);
 
 	useEffect(() => {
 		const getData = async () => {
-			setStatus({ isLoading: true, isError: null });
+			setStatus((prev) => ({ ...prev, isLoading: true }));
 			try {
-				const playlistDetails = await spotifyApi.getPlaylist(id);
-				setplaylistinfo({
-					image: playlistDetails.body.images[0].url,
-					name: playlistDetails.body.name
+				const playlistDetail = await spotifyApi.getPlaylist(id);
+				setPlaylistInfo({
+					image: playlistDetail.body.images[0].url,
+					name: playlistDetail.body.name
 				});
-				const { items } = playlistDetails.body.tracks;
-				// Format songs
-				const formattedSongs = formatSongs(items);
+
+				const { tracks } = playlistDetail.body;
+				const formattedSongs = formatSongData(tracks.items);
 				setSongs(formattedSongs);
-			} catch (e) {
-				console.error(e);
-				setStatus({ isLoading: false, isError: e });
+			} catch (error) {
+				setStatus((prev) => ({ ...prev, isError: error }));
 			}
 		};
 
 		getData().finally(() => {
-			setStatus({ isLoading: false, isError: null });
+			setStatus((prev) => ({ ...prev, isLoading: false }));
 		});
-	}, [id, formatSongs, spotifyApi, token]);
+	}, [formatSongData, id, spotifyApi, token]);
 
 	return (
-		<Box id="Playlist__page" sx={{ backgroundColor: 'background.paper', flex: 1, overflowY: 'auto' }}>
+		<Box id="Playlist__page" sx={{ bgcolor: 'background.paper', flex: 1, overflowY: 'auto' }}>
 			<Box
 				p={{ xs: 3, md: 4 }}
 				sx={{
@@ -59,28 +59,27 @@ const Playlist = ({ spotifyApi, token }) => {
 					flexDirection: { xs: 'column', md: 'row' }
 				}}
 			>
-				{status.isLoading ? (
-					<Skeleton
-						variant="square"
-						sx={{ width: { xs: '100%', md: 235 }, height: { xs: '100%', md: 235 } }}
-					/>
-				) : (
-					<Avatar
-						src={playlistInfo?.image}
-						variant="square"
-						alt={playlistInfo?.image}
-						sx={{ boxShadow: 15, width: { xs: '100%', md: 235 }, height: { xs: '100%', md: 235 } }}
-					/>
-				)}
+				<Avatar
+					src={playlistInfo?.image}
+					variant="square"
+					alt="Bieber"
+					sx={{
+						boxShadow: 15,
+						width: { sx: '100%', md: 235 },
+						height: { sx: '100%', md: 235 }
+					}}
+				/>
 				<Box>
 					<Typography sx={{ fontSize: 12, fontWeight: 'bold', color: 'text.primary' }}>Playlist</Typography>
-					{status.isLoading ? (
-						<Skeleton variant="text" sx={{ fontSize: { xs: 42, md: 72 }, width:200 }} />
-					) : (
-						<Typography sx={{ fontSize: { xs: 42, md: 72 }, fontWeight: 'bold', color: 'text.primary' }}>
-							{playlistInfo?.name}
-						</Typography>
-					)}
+					<Typography
+						sx={{
+							fontSize: { xs: 42, md: 72 },
+							fontWeight: 'bold',
+							color: 'text.primary'
+						}}
+					>
+						{playlistInfo?.name}
+					</Typography>
 				</Box>
 			</Box>
 			<SongTable songs={songs} loading={status.isLoading} spotifyApi={spotifyApi} />
